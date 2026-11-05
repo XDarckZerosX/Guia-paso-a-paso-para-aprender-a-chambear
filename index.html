@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Paso a Paso - Estudio de Mercadeo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #24292e;
+            background: #f6f8fa;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .top-header h1 {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .page-indicator {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .pages-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.4s ease;
+            pointer-events: none;
+            display: none;
+        }
+
+        .page.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+            display: block;
+        }
+
+        .page-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .page-title {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .page-subtitle {
+            color: #586069;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #24292e;
+            margin: 30px 0 15px 0;
+            font-size: 1.4em;
+            padding-left: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        h3 {
+            color: #24292e;
+            margin: 20px 0 12px 0;
+            font-size: 1.2em;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #444;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* ESTILO PARA LAS IMÁGENES */
+        .img-container {
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .img-container img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+            border: 1px solid #eaecef;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .img-caption {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #586069;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Cajas informativas */
+        .highlight-box {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+            border-left: 5px solid #f5a623;
+            padding: 18px 22px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e6f7ff 0%, #cceeff 100%);
+            border-left: 5px solid #0366d6;
+            padding: 18px 22px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e6ffed 0%, #ccffdd 100%);
+            border-left: 5px solid #28a745;
+            padding: 18px 22px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff0f0 0%, #ffe0e0 100%);
+            border-left: 5px solid #d73a49;
+            padding: 18px 22px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* Navegación */
+        .navigation {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+            z-index: 100;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-size: 0.95em;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #d1d5da;
+            cursor: not-allowed;
+        }
+
+        .page-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #d1d5da;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #667eea;
+            width: 30px;
+            border-radius: 5px;
+        }
+
+        /* Página inicio */
+        .hero {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            color: #586069;
+            margin-bottom: 30px;
+        }
+
+        .steps-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step-overview-card {
+            background: white;
+            border: 2px solid #eaecef;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .step-overview-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .step-overview-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin: 0 auto 15px;
+        }
+
+        .step-overview-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .step-overview-card p {
+            color: #586069;
+            font-size: 0.9em;
+        }
+
+        code {
+            background: #f6f8fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d73a49;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .top-header h1 { font-size: 1em; }
+            .page-content { padding: 25px 20px; }
+            .page-title { font-size: 1.5em; }
+            .hero h1 { font-size: 1.8em; }
+            .navigation { padding: 10px 15px; }
+            .nav-btn { padding: 8px 15px; font-size: 0.85em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="top-header">
+            <h1>📈 Guía de Mercadeo</h1>
+            <div class="page-indicator" id="pageIndicator">Página 1 de 8</div>
+        </div>
+
+        <div class="pages-container">
+            <!-- PÁGINA 0: INICIO -->
+            <div class="page active" data-page="0">
+                <div class="page-content">
+                    <div class="hero">
+                        <h1>📈 Estudio de Mercadeo</h1>
+                        <p>Cómo hacer un estudio de mercadeo para vender en pandemia y no quedar pobre</p>
+                    </div>
+
+                    <div class="highlight-box">
+                        <strong>🎯 Introducción:</strong> Para realizar un estudio de mercadeo primero necesitamos hacer una investigación profunda o parcial, dependiendo de lo que quieras vender. Piensa en un producto que cumpla con estas características:
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Que sea <strong>necesario ahora</strong></li>
+                            <li>Que <strong>no sea de un único uso</strong></li>
+                            <li>Que sea <strong>fuertemente comprado</strong> (que se gaste o deteriore, generando la necesidad de volverlo a comprar)</li>
+                            <li>Que se <strong>adapte a tu presupuesto</strong></li>
+                        </ul>
+                    </div>
+
+                    <p>Si ya identificaste un producto bueno, hallaste una necesidad y encontraste la forma de suplirla, básicamente hiciste un estudio de mercadeo. Ahora vamos a un caso más real y profundo, porque no es tan simple.</p>
+
+                    <h2>📚 ¿Qué aprenderás?</h2>
+                    <p>Esta guía te llevará paso a paso por todo el proceso de un estudio de mercadeo profesional:</p>
+
+                    <div class="steps-overview">
+                        <div class="step-overview-card" onclick="goToPage(1)">
+                            <div class="step-overview-number">1</div>
+                            <h3>Identificar Productos</h3>
+                            <p>Encuentra productos en tendencia usando AliExpress</p>
+                        </div>
+                        <div class="step-overview-card" onclick="goToPage(2)">
+                            <div class="step-overview-number">2</div>
+                            <h3>Análisis Cualitativo</h3>
+                            <p>Construye una matriz de comparación cualitativa</p>
+                        </div>
+                        <div class="step-overview-card" onclick="goToPage(3)">
+                            <div class="step-overview-number">3</div>
+                            <h3>Pronósticos</h3>
+                            <p>Usa Google Trends y modelos predictivos</p>
+                        </div>
+                        <div class="step-overview-card" onclick="goToPage(4)">
+                            <div class="step-overview-number">4</div>
+                            <h3>Finanzas</h3>
+                            <p>Presupuesto, sensibilidad y estrategia</p>
+                        </div>
+                        <div class="step-overview-card" onclick="goToPage(5)">
+                            <div class="step-overview-number">5</div>
+                            <h3>Planificación Temporal</h3>
+                            <p>Gantt, PERT y trazabilidad</p>
+                        </div>
+                        <div class="step-overview-card" onclick="goToPage(6)">
+                            <div class="step-overview-number">6</div>
+                            <h3>Probabilidades</h3>
+                            <p>Análisis de riesgo y árbol de decisiones</p>
+                        </div>
+                        <div class="step-overview-card" onclick="goToPage(7)">
+                            <div class="step-overview-number">7</div>
+                            <h3>Simulador</h3>
+                            <p>Simulador de rentabilidad</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA 1: PASO 1 -->
+            <div class="page" data-page="1">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 1: Identificación de Productos en Tendencia</h1>
+                    <p class="page-subtitle">Encuentra productos buscados actualmente usando plataformas como AliExpress</p>
+
+                    <p>Necesitas una página que venda productos buscados en este momento, o que sean lo que los jóvenes llaman "tendencia": productos cotizados por anuncios o por algo que vieron en la web o en alguna aplicación social.</p>
+
+                    <div class="info-box">
+                        <strong>💡 Plataformas recomendadas:</strong> AliExpress (la que usaremos), Shein, Temu, Alibaba, entre otras.
+                    </div>
+
+                    <h2>🔍 Proceso en AliExpress</h2>
+                    <ol>
+                        <li><strong>Regístrate</strong> en AliExpress</li>
+                        <li>Al iniciar sesión, ve a <code>Mi Cuenta</code></li>
+                        <li>Selecciona <code>Centro de Dropshipping</code></li>
+                        <li>Busca la sección <code>Productos Ganadores</code></li>
+                        <li>Haz clic en <code>Ver más</code> para explorar</li>
+                    </ol>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen1.jpg" alt="Menú Mi Cuenta de AliExpress con Centro de Dropshipping">
+                        <p class="img-caption">Figura 1: Menú Mi Cuenta - Selecciona "Centro de Dropshipping"</p>
+                    </div>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen2.jpg" alt="Centro de Dropshipping con Productos Ganadores">
+                        <p class="img-caption">Figura 2: Centro de Dropshipping - Baja hasta encontrar "Productos Ganadores"</p>
+                    </div>
+
+                    <p>En la sección de "Productos Ganadores" encontrarás los productos con más vistas, mejor precio, más compras o mejor puntuados del momento.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen3.jpg" alt="Lista de productos ganadores en AliExpress">
+                        <p class="img-caption">Figura 3: Productos Ganadores - Los más vendidos y mejor valorados</p>
+                    </div>
+
+                    <h2>📋 Selección de Productos</h2>
+                    <p>Busca <strong>3 productos</strong> entre los miles disponibles, pensando siempre en los criterios iniciales. Mi consejo:</p>
+                    
+                    <div class="success-box">
+                        <strong>🎯 Consejo Pro:</strong> Selecciona 30 productos de tu interés, luego ve pensando en los parámetros para descartarlos:
+                        <ul style="margin-top: 10px;">
+                            <li>Que no sean estacionales</li>
+                            <li>Que se compren y no se les dé un único uso</li>
+                            <li>Que se usen, se gasten y se vuelvan a comprar</li>
+                            <li>Que sean de uso general (no solo en ciertas zonas)</li>
+                            <li>Que sean unisex o para público en general, independiente de las edades</li>
+                        </ul>
+                    </div>
+
+                    <h2>📊 Datos a Recopilar</h2>
+                    <p>Una vez seleccionados los productos, compara:</p>
+                    <ul>
+                        <li>Precios</li>
+                        <li>Puntuaciones y calificaciones</li>
+                        <li>Cantidad vendida</li>
+                        <li>Quién lo vende (vendedor)</li>
+                        <li>Desde dónde lo vende (ubicación)</li>
+                        <li>Confiabilidad del vendedor</li>
+                    </ul>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen4.jpg" alt="Datos del producto en AliExpress">
+                        <p class="img-caption">Figura 4: Datos debajo del nombre del producto (precio, valoración, ventas)</p>
+                    </div>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen5.jpg" alt="Datos del vendedor en AliExpress">
+                        <p class="img-caption">Figura 5: Información del vendedor (nombre, ubicación, antigüedad)</p>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>💡 Tip:</strong> En AliExpress, estos datos aparecen debajo del nombre del producto. Los datos del vendedor están encima del tiempo de entrega. Te sugiero hacer una <strong>matriz de comparación cualitativa</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA 2: PASO 2 -->
+            <div class="page" data-page="2">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 2: Análisis Cualitativo</h1>
+                    <p class="page-subtitle">Construye una matriz de comparación cualitativa para identificar el producto más confiable</p>
+
+                    <p>Una vez recopilados los datos, construye una <strong>matriz de comparación cualitativa</strong> para identificar cuál producto es más confiable, económico o mejor puntuado frente a los demás.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen6.jpg" alt="Matriz de Comparación Cualitativa de productos">
+                        <p class="img-caption">Figura 6: Matriz de Comparación Cualitativa - Análisis de los 3 productos</p>
+                    </div>
+
+                    <h2>📋 Criterios de la Matriz</h2>
+                    <p>La matriz debe incluir los siguientes criterios para cada producto:</p>
+                    <ul>
+                        <li><strong>Categoría:</strong> Tipo de producto (dispositivo médico, cuidado de piel, etc.)</li>
+                        <li><strong>Propósito:</strong> Para qué sirve</li>
+                        <li><strong>Valoración:</strong> Puntuación y cantidad de reseñas</li>
+                        <li><strong>Facilidad de Uso:</strong> Qué tan fácil es de usar</li>
+                        <li><strong>Calidad-Precio:</strong> Relación entre calidad y costo</li>
+                        <li><strong>Pros:</strong> Ventajas del producto</li>
+                        <li><strong>Contras:</strong> Desventajas del producto</li>
+                        <li><strong>Análisis General:</strong> Recomendado, aceptable o descartar</li>
+                    </ul>
+
+                    <div class="success-box">
+                        <strong>✅ Resultado:</strong> La matriz de comparación cualitativa te permite identificar rápidamente cuál producto es más confiable, económico o mejor puntuado frente a los demás.
+                    </div>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Importante:</strong> No te quedes solo con el producto más económico. Debes cruzar varios criterios antes de tomar una decisión final.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA 3: PASO 3 -->
+            <div class="page" data-page="3">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 3: Pronósticos con Google Trends</h1>
+                    <p class="page-subtitle">Usa datos reales para pronosticar la demanda futura del producto</p>
+
+                    <p>Una vez seleccionado el producto, es momento de preguntarse: <em>"¿Cuál será el mejor para vender?"</em> Muchos dirán "agarremos el más económico y vendámoslo", pero no es así. En este momento necesitas aprender a hacer <strong>pronósticos</strong>:</p>
+
+                    <ul>
+                        <li>Último Valor</li>
+                        <li>Promedio Simple</li>
+                        <li>Promedio Móvil</li>
+                        <li>Suavización Exponencial</li>
+                        <li>Regresión Lineal</li>
+                    </ul>
+
+                    <p>Con estos pronósticos puedes saber cuál producto es el mejor. Pero ahora te preguntarás: "Está bien, usamos los pronósticos, pero no tenemos una serie de datos". Y es verdad, hasta el momento no tienes una serie de datos para hacer pronósticos, así que vamos a buscarla con <strong>Google Trends</strong>.</p>
+
+                    <h2>🌐 ¿Qué hace Google Trends?</h2>
+                    <p>Google Trends guarda lo que la gente busca. Por ejemplo: si quieres una funda de celular de Goku SSJ3 con rayos prismáticos, antes de saber exactamente qué quieres, vas a buscar "fundas para celular" así a secas, hasta encontrar la que quieres.</p>
+
+                    <p>Al buscar "fundas para celular", Google Trends guarda esa búsqueda y la almacena en su memoria, donde se guardan parámetros como:</p>
+                    <ul>
+                        <li>Dónde se hizo la búsqueda</li>
+                        <li>En qué fecha</li>
+                        <li>Cuántas veces alguien ha hecho esa búsqueda</li>
+                    </ul>
+
+                    <p>Esos datos nos darán una gráfica de líneas y puntos que nos mostrarán la <strong>tendencia, oscilación, estacionalidad, aleatoriedad</strong> y, adicionalmente, una serie de datos.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen7.jpg" alt="Gráfica de Google Trends">
+                        <p class="img-caption">Figura 7: Gráfica de Google Trends - Tendencia del producto en las últimas 24 horas</p>
+                    </div>
+
+                    <div class="info-box">
+                        <strong>💡 Importante:</strong> Configura el rango de tiempo a <strong>12 meses</strong> para obtener datos del último año.
+                    </div>
+
+                    <h2>📥 Descargando el CSV</h2>
+                    <p>Haz clic en "Descargar CSV" para obtener la serie de datos del último año. Se descargará un archivo de Excel con una serie de datos como esta:</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen8.jpg" alt="Botón Descargar CSV en Google Trends">
+                        <p class="img-caption">Figura 8: Botón para descargar el archivo CSV</p>
+                    </div>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen9.jpg" alt="CSV con datos en una sola columna">
+                        <p class="img-caption">Figura 9: Archivo CSV descargado - Los datos están todos en una sola columna</p>
+                    </div>
+
+                    <h2>📑 Procesando el CSV en Excel</h2>
+                    <p>Como puedes ver, los datos están todos en una sola columna. Vas a cambiar eso dividiendo los datos de cada producto y las fechas. Sigue estos pasos:</p>
+
+                    <ol>
+                        <li>Selecciona la columna con los datos</li>
+                        <li>Ve a la pestaña <code>Datos</code></li>
+                        <li>Haz clic en <code>Texto en columnas</code></li>
+                        <li>Selecciona <code>Delimitados</code> → Siguiente</li>
+                        <li>Selecciona la opción <code>Coma</code> → Finalizar</li>
+                    </ol>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen10.jpg" alt="CSV ya separado en columnas en Excel">
+                        <p class="img-caption">Figura 10: Datos ya organizados por columnas (Time, Bálsamo, Crema, Termómetro)</p>
+                    </div>
+
+                    <p>Si hiciste el paso a paso correctamente, te aparecerá la serie de datos ya organizada por columnas.</p>
+
+                    <h2>📐 Aplicando Modelos de Pronóstico</h2>
+                    <p>Ahora usarás los modelos de pronósticos y, en los propios modelos, calcularás las <strong>métricas de error</strong>:</p>
+                    <ul>
+                        <li><strong>DMA</strong> - Desviación Media Absoluta (MAD)</li>
+                        <li><strong>EMC</strong> - Error Medio Cuadrático (MSE)</li>
+                        <li><strong>PEMA%</strong> - Porcentaje de Error Medio Absoluto (MAPE)</li>
+                        <li><strong>PME%</strong> - Porcentaje Medio de Error</li>
+                    </ul>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen11.jpg" alt="Dashboard de pronósticos del producto Crema">
+                        <p class="img-caption">Figura 11: Dashboard de pronósticos - Producto Crema (Regresión Lineal con MAPE 4.2%)</p>
+                    </div>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen12.jpg" alt="Dashboard de pronósticos del producto Bálsamo">
+                        <p class="img-caption">Figura 12: Dashboard de pronósticos - Producto Bálsamo</p>
+                    </div>
+
+                    <div class="success-box">
+                        <strong>🏆 Producto Ganador:</strong> Usando las métricas de error, puedes saber cuál es el pronóstico con el menor porcentaje de error. Ese será el pronóstico a usar en esta serie de datos.
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA 4: PASO 4 -->
+            <div class="page" data-page="4">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 4: Finanzas y Presupuesto</h1>
+                    <p class="page-subtitle">Plan de inversión, análisis de sensibilidad y estrategia de comercialización</p>
+
+                    <p>Con el producto ganador identificado, ahora con tu presupuesto comienza a hacer las finanzas: cuánto se va a gastar, cuánto se va a guardar y cuál es el presupuesto inicial.</p>
+
+                    <div class="warning-box">
+                        <strong>⚠️ Recuerda:</strong> Todo presupuesto exige otros gastos adicionales, ya sean costos de importación, aranceles (si se compra al mayoreo y se excede cierto límite), empaquetado, y el medio de transporte (vía marítima o aérea).
+                    </div>
+
+                    <h2>💰 Plan de Inversión</h2>
+                    <p>Agrega lo que consideres necesario para hacer un buen plan de inversión y presupuesto.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen13.jpg" alt="Plan de Inversión y Presupuesto">
+                        <p class="img-caption">Figura 13: Plan de Inversión y Presupuesto - Análisis financiero con restricciones presupuestales</p>
+                    </div>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen14.jpg" alt="Desglose Final de Gastos del Proyecto">
+                        <p class="img-caption">Figura 14: Desglose Final de Gastos - Detalle de los $25 USD iniciales</p>
+                    </div>
+
+                    <h2>📊 Análisis de Sensibilidad</h2>
+                    <p>Al realizar un proyecto se pueden presentar problemas o situaciones que cambien el presupuesto. Por eso es importante hacer un <strong>análisis de sensibilidad</strong>, el cual nos dice si vas a vender los productos en paquetes de 3, por unidad, etc., y cómo cambia el presupuesto.</p>
+
+                    <p>El análisis de sensibilidad evalúa cómo cambian los resultados financieros según diferentes escenarios de distribución de los kits.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen15.jpg" alt="Escenarios de Venta Proyectados">
+                        <p class="img-caption">Figura 15: Escenarios de Venta Proyectados (Conservador, Base, Optimista)</p>
+                    </div>
+
+                    <h2>🛍️ Estrategia de Comercialización</h2>
+                    <p>Antes de hacer el análisis de sensibilidad, debes definir una <strong>estrategia de comercialización</strong> donde se decidirá cómo vas a vender tu producto.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen16.jpg" alt="Propuesta de Kits y Paquetes">
+                        <p class="img-caption">Figura 16: Estrategia de Comercialización - Propuesta de Kits/Paquetes</p>
+                    </div>
+
+                    <h2>🌐 Plataformas de Venta</h2>
+                    <p>Lo siguiente que debes decidir es por qué medio o en qué lugar comercializarás el producto (ya sea en redes o presencial).</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen17.jpg" alt="Plataformas de Venta Online Recomendadas">
+                        <p class="img-caption">Figura 17: Plataformas de Venta Online Recomendadas</p>
+                    </div>
+
+                    <div class="success-box">
+                        <strong>✅ Resumen de lo aprendido hasta ahora:</strong>
+                        <ol style="margin-top: 10px;">
+                            <li>Cómo identificar un producto en tendencia</li>
+                            <li>Cómo conseguir datos del producto</li>
+                            <li>Cómo pronosticar los datos para saber la proyección futura</li>
+                            <li>Cómo saber cuál pronóstico tiene menor tasa de error usando métricas</li>
+                            <li>Cómo hacer un presupuesto</li>
+                            <li>La importancia y cómo hacer un análisis de sensibilidad</li>
+                            <li>Cómo hacer una estrategia de ventas o comercialización</li>
+                            <li>Entender por dónde lo van a vender</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA 5: PASO 5 -->
+            <div class="page" data-page="5">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 5: Planificación Temporal</h1>
+                    <p class="page-subtitle">Diagramas de Gantt, PERT y trazabilidad del proyecto</p>
+
+                    <p>Y ahora te preguntarás: "¿Eso es todo para poder iniciar un negocio?" La respuesta es <strong>NO</strong>. Ya entendiste bastantes cosas llegados a este punto, pero no sabes cuánto tiempo va a durar no solo hasta que te llegue la mercancía a tu punto de recogida, sino cuánto tiempo lleva todo desde el empaquetado hasta que lo comercialices.</p>
+
+                    <p>Para esto hacemos uso del sistema de administración de planificación (<strong>PERT, Gantt</strong>).</p>
+
+                    <h2>📅 Diagrama de Gantt</h2>
+                    <p>El diagrama de Gantt se usa para saber qué procesos o trabajos se tienen que hacer antes que otros y cuánto tiempo dura cada uno.</p>
+
+                    <h3>Ejemplo sencillo: Hacer la cena</h3>
+                    <p>Tienes procesos A, B, C, D, E, F, G. Vas a hacer arepas con queso y carne:</p>
+                    <ul>
+                        <li><strong>A =</strong> 20 min: preparas la mezcla de harina, huevo y agua</li>
+                        <li><strong>B =</strong> 10 min, puedes iniciarla en paralelo con A: preparar el asador</li>
+                        <li><strong>D =</strong> necesitas finalizar A y B: 10 min para asar las arepas</li>
+                        <li><strong>E =</strong> 3 min, puedes hacerla en paralelo con D: rallar el queso</li>
+                        <li><strong>F =</strong> inicia en paralelo con A: 35 min</li>
+                        <li><strong>G =</strong> armas las arepas con queso y carne: 15 min</li>
+                    </ul>
+                    <p><strong>Tiempo total:</strong> 50 minutos para finalizar el proceso.</p>
+
+                    <h3>Diagrama de Gantt del Proyecto</h3>
+                    <div class="img-container">
+                        <img src="Imagenes/imagen18.jpg" alt="Diagrama de Gantt del proyecto">
+                        <p class="img-caption">Figura 18: Diagrama de Gantt - Visualización temporal del proyecto con las 17 actividades</p>
+                    </div>
+
+                    <p>Como puedes ver en este diagrama, las barras rosadas indican <strong>actividades críticas</strong>: son actividades que pueden realizarse en paralelo con otra actividad y no perjudican las demás.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen19.jpg" alt="Tabla de Actividades y Tiempos">
+                        <p class="img-caption">Figura 19: Tabla de Actividades y Tiempos con predecesoras, tiempos y holguras</p>
+                    </div>
+
+                    <p>Esto lo aplicamos para que, en el manejo de una importación, podamos saber los tiempos de espera de los productos y los tiempos esperados hasta su venta.</p>
+
+                    <h2>🔗 Diagrama de Red PERT</h2>
+                    <p>Al hacer el diagrama de Gantt hay ciertos fallos, y eso se ve en la organización de las barras: actividades que pueden hacerse en paralelo o desde el inicio crean un desorden descomunal. Por tal motivo es mejor hacer el <strong>diagrama de PERT</strong>.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen20.jpg" alt="Diagrama de Red PERT">
+                        <p class="img-caption">Figura 20: Diagrama de Red PERT con ruta crítica y actividades no críticas</p>
+                    </div>
+
+                    <p>El diagrama de PERT se puede ajustar cambiando las actividades con otras para que no choquen, y es sencillo a simple vista.</p>
+                </div>
+            </div>
+
+            <!-- PÁGINA 6: PASO 6 -->
+            <div class="page" data-page="6">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 6: Probabilidades y Trazabilidad</h1>
+                    <p class="page-subtitle">Análisis de probabilidades, trazabilidad y árbol de decisiones</p>
+
+                    <h2>🎲 Análisis de Probabilidades</h2>
+                    <p>Al finalizar los diagramas PERT y Gantt, te recomiendo hacer un <strong>análisis de probabilidades</strong> con la información suministrada, para saber qué probabilidades hay de acabar en un rango de cuántos días (esto porque a veces el producto se retrasa o llega anticipadamente, lo cual aumenta o resta tiempo).</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen21.jpg" alt="Análisis de Probabilidades">
+                        <p class="img-caption">Figura 21: Análisis de Probabilidades con fórmula Z y tabla de días vs probabilidades</p>
+                    </div>
+
+                    <div class="success-box">
+                        <strong>💡 Recomendación:</strong> Planificar el proyecto para <strong>90 días</strong> ofrece un margen de seguridad óptimo considerando el envío marítimo.
+                    </div>
+
+                    <h2>📍 Diagrama de Flujo de Trazabilidad</h2>
+                    <p>Lo siguiente que puedes hacer, para dejar en claro cuáles son los puntos importantes que va a tocar el producto desde su importación desde el lugar donde lo compras, es hacer un <strong>diagrama de flujo de trazabilidad</strong>, donde se verán los puntos más importantes por donde pasará el paquete.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen22.jpg" alt="Diagrama de Flujo de Trazabilidad">
+                        <p class="img-caption">Figura 22: Diagrama de Flujo de Trazabilidad (China → Tránsito Marítimo → Puerto → Transporte → Ibagué)</p>
+                    </div>
+
+                    <p>Recalcando las etapas y qué procesos se harán en cada una. Por ejemplo: en <strong>Wuhan Shunqiyan Technology (China)</strong> se hará empaquetado, etiquetado, generación de número de seguimiento, adicional a esto factura comercial, packing list y el tiempo estimado de esta etapa.</p>
+
+                    <p>Y así seguirá sucesivamente hasta llegar a la última etapa que, como se puede ver, es llegar a Ibagué.</p>
+
+                    <h2>🌳 Árbol de Decisiones con Probabilidades</h2>
+                    <p>Como se dijo anteriormente, la importación y comercialización conlleva riesgos desde el inicio del proceso, donde se presentan porcentajes de si sucede o no sucede algo.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen23.jpg" alt="Árbol de Decisiones">
+                        <p class="img-caption">Figura 23: Árbol de Decisiones completo mostrando las puertas D1 a D17 con sus probabilidades</p>
+                    </div>
+
+                    <p>Donde se verán cosas como: inicias tu proyecto y buscas el proveedor; hay unas puertas que se me abren en ese momento: negociar, pago directo, otros proveedores, o intento plagiar ese producto. Entre esas puertas hay ciertas probabilidades de éxito y otras no, que me van a abrir otras puertas, hasta la finalización exitosa de mi proyecto o su fracaso.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen24.jpg" alt="Tabla FASE 1 Pre-Inversión">
+                        <p class="img-caption">Figura 24: Tabla detallada de FASE 1 - Pre-Inversión (D1→D4) con ramas SI/NO e impacto financiero</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PÁGINA 7: PASO 7 -->
+            <div class="page" data-page="7">
+                <div class="page-content">
+                    <h1 class="page-title">Paso 7: Simulador de Rentabilidad</h1>
+                    <p class="page-subtitle">Simulador interactivo para modificar parámetros en tiempo real</p>
+
+                    <p>Ya para finalizar, deberían hacer siempre un <strong>simulador de rentabilidad</strong>.</p>
+
+                    <div class="img-container">
+                        <img src="Imagenes/imagen25.jpg" alt="Simulador Interactivo de Rentabilidad">
+                        <p class="img-caption">Figura 25: Simulador Interactivo de Rentabilidad con parámetros y resultados en tiempo real</p>
+                    </div>
+
+                    <p>Para que puedan cambiar los parámetros en tiempo real y saber cómo cambian los resultados financieros, considerando los costos ocultos reales.</p>
+
+                    <div class="success-box">
+                        <strong>🎯 Objetivo del simulador:</strong> Modifica los parámetros (proveedor, cajas a importar, presupuesto disponible, unidades totales, precio de venta por caja) para ver en tiempo real cómo cambian los resultados (inversión total, % del presupuesto, ingreso proyectado, costos ocultos variables, ganancia neta real).
+                    </div>
+
+                    <h2>✅ Resumen Final</h2>
+                    <p>Llegados a este punto, ya comprendiste cómo:</p>
+                    <ol>
+                        <li>Identificar un producto en tendencia</li>
+                        <li>Conseguir datos del producto</li>
+                        <li>Pronosticar los datos para saber la proyección futura</li>
+                        <li>Saber cuál pronóstico tiene menor tasa de error usando métricas</li>
+                        <li>Hacer un presupuesto</li>
+                        <li>Hacer un análisis de sensibilidad</li>
+                        <li>Hacer una estrategia de comercialización</li>
+                        <li>Entender por dónde lo van a vender</li>
+                        <li>Planificar tiempos con Gantt y PERT</li>
+                        <li>Analizar probabilidades de éxito</li>
+                        <li>Trazar el proceso con diagrama de trazabilidad</li>
+                        <li>Gestionar riesgos con árbol de decisiones</li>
+                        <li>Simular rentabilidad en tiempo real</li>
+                    </ol>
+
+                    <div class="highlight-box">
+                        <strong>📈 Recuerda:</strong> Un buen estudio de mercadeo no garantiza el éxito, pero reduce drásticamente el riesgo de fracaso. ¡Tú puedes!
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegación -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="prevPage()">← Anterior</button>
+            <div class="page-dots" id="pageDots"></div>
+            <button class="nav-btn" id="nextBtn" onclick="nextPage()">Siguiente →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 0;
+        const totalPages = 8;
+
+        const dotsContainer = document.getElementById('pageDots');
+        for (let i = 0; i < totalPages; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (i === 0 ? ' active' : '');
+            dot.onclick = () => goToPage(i);
+            dotsContainer.appendChild(dot);
+        }
+
+        function updatePage() {
+            document.querySelectorAll('.page').forEach((page, index) => {
+                if (index === currentPage) {
+                    page.classList.add('active');
+                } else {
+                    page.classList.remove('active');
+                }
+            });
+
+            document.querySelectorAll('.dot').forEach((dot, index) => {
+                if (index === currentPage) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            document.getElementById('pageIndicator').textContent = `Página ${currentPage + 1} de ${totalPages}`;
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+
+            const activePage = document.querySelector('.page.active');
+            if (activePage) activePage.scrollTop = 0;
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                updatePage();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePage();
+            }
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            updatePage();
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextPage();
+            if (e.key === 'ArrowLeft') prevPage();
+        });
+
+        updatePage();
+    </script>
+</body>
+</html>
